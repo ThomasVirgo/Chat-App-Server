@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.conf import settings
 from django.contrib.auth.models import User
 
 
@@ -8,13 +9,13 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     password_confirmation = serializers.CharField(write_only=True)
 
     class Meta:
-        model = User
-        fields = ('username', 'password', 'password_confirmation')
+        model = settings.AUTH_USER_MODEL
+        fields = ('email', 'password', 'password_confirmation')
         write_only_fields = ('password', 'password_confirmation')
 
     def create(self, validated_data):
-        user = User.objects.create(
-            username=validated_data['username']
+        user = settings.AUTH_USER_MODEL.objects.create(
+            email=validated_data['email']
         )
         password=validated_data['password']
         password_confirmation=validated_data['password_confirmation']

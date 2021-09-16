@@ -33,6 +33,8 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     'users',
     'rest_framework',
+    "API",
+    "corsheaders",
     'rest_framework.authtoken',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -124,6 +126,7 @@ USE_L10N = True
 
 USE_TZ = True
 
+AUTH_USER_MODEL = 'users.User'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
