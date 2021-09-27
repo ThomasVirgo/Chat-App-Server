@@ -19,6 +19,13 @@ class UserList(APIView):
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
 
+class UserDetail(APIView):
+    UserModel = get_user_model()
+    def get(self, request, username, form=None):
+        user = get_object_or_404(self.UserModel, username = username)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+
 class GetFriendRequests(APIView):
     UserModel = get_user_model()
     def get(self, request, username, format=None):
