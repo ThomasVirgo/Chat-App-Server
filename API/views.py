@@ -1,7 +1,7 @@
-from django.shortcuts import HttpResponse
+from django.shortcuts import HttpResponse, get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import serializers, status
 from rest_framework.permissions import IsAuthenticated
 from .serilalizers import UserSerializer, FriendRequestSerializer
 from django.contrib.auth import get_user_model
@@ -15,8 +15,8 @@ class UserList(APIView):
     # permission_classes = [IsAuthenticated,]
     UserModel = get_user_model()
     def get(self, request, format=None):
-        restaurants = self.UserModel.objects.all()
-        serializer = UserSerializer(restaurants, many=True)
+        users = self.UserModel.objects.all()
+        serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
 
 class GetFriendRequests(APIView):
@@ -53,6 +53,20 @@ class FriendRequestList(APIView):
 class FriendRequestDetail(APIView):
     UserModel = get_user_model()
     def get(self, request, id, form=None):
-        friend_request = FriendRequest.objects.get(id = id)
+        friend_request = get_object_or_404(FriendRequest, id=id)
         serializer = FriendRequestSerializer(friend_request)
         return Response(serializer.data)
+    
+    def patch(self, request, id, form=None):
+        friend_request = get_object_or_404(FriendRequest, id=id)
+        to_user = get_object_or_404(self.UserModel, id = request.data['to_user'])
+        from_user = get_object_or_404(self.UserModel, id = request.data['from_user'])
+        serializer = FriendRequestSerializer(friend_request, data=request.data, partial=True)
+        if serializer.is_valid():
+            if request.data['accepted']:
+                to_user.friends.add(from_user)
+                from_user.friends.add(to_user)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
