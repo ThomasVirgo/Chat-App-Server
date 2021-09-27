@@ -27,15 +27,19 @@ class GetFriendRequests(APIView):
         serializer = FriendRequestSerializer(friend_requests, many=True)
         return Response(serializer.data)
 
-class PostFriendRequest(APIView):
+class FriendRequestList(APIView):
     UserModel = get_user_model()
+
+    def get(self, request, form=None):
+        friend_requests = FriendRequest.objects.all()
+        serializer = FriendRequestSerializer(friend_requests, many=True)
+        return Response(serializer.data)
+
     def post(self, request, form=None):
         to_user_email = request.data['to_user']
         from_user_email = request.data['from_user']
         to_user = self.UserModel.objects.get(username = to_user_email).id
         from_user = self.UserModel.objects.get(username = from_user_email).id
-        # print(to_user, from_user)
-        # return Response('testing...')
         data = {
             "to_user":to_user,
             "from_user":from_user
@@ -45,3 +49,10 @@ class PostFriendRequest(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class FriendRequestDetail(APIView):
+    UserModel = get_user_model()
+    def get(self, request, id, form=None):
+        friend_request = FriendRequest.objects.get(id = id)
+        serializer = FriendRequestSerializer(friend_request)
+        return Response(serializer.data)

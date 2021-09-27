@@ -7,3 +7,4 @@ class FriendRequest(models.Model):
 
     from_user = models.ForeignKey(UserModel, related_name='from_user', on_delete=models.CASCADE)
     to_user = models.ForeignKey(UserModel, related_name='to_user', on_delete=models.CASCADE)
+    is_complete = models.BooleanField(default = False)
