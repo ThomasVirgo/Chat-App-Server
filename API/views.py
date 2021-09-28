@@ -3,9 +3,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import serializers, status
 from rest_framework.permissions import IsAuthenticated
-from .serilalizers import UserSerializer, FriendRequestSerializer
+from .serilalizers import UserSerializer, FriendRequestSerializer, MessageSerializer
 from django.contrib.auth import get_user_model
-from .models import FriendRequest
+from .models import FriendRequest, Message
 
 def index(request):
     return HttpResponse('<h1>Welcome to the api...</h1>')
@@ -95,3 +95,25 @@ class FriendRequestDetail(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class MessageList(APIView):
+    UserModel = get_user_model()
+
+    def get(self, request, form=None):
+        messages = Message.objects.all()
+        serializer = MessageSerializer(messages, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, form=None):
+        # message = request.data['message']
+        # to_user = get_object_or_404(self.UserModel, id = request.data['to_user'])
+        # from_user = get_object_or_404(self.UserModel, id = request.data['from_user'])
+        # data = {
+        #     "to_user":to_user,
+        #     "from_user":from_user,
+        #     "message": message
+        # }
+        serializer = MessageSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
