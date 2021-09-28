@@ -104,16 +104,19 @@ class MessageList(APIView):
         return Response(serializer.data)
 
     def post(self, request, form=None):
-        # message = request.data['message']
-        # to_user = get_object_or_404(self.UserModel, id = request.data['to_user'])
-        # from_user = get_object_or_404(self.UserModel, id = request.data['from_user'])
-        # data = {
-        #     "to_user":to_user,
-        #     "from_user":from_user,
-        #     "message": message
-        # }
         serializer = MessageSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class GetChatHistory(APIView):
+    UserModel = get_user_model()
+
+    def get(self, request, user1, user2, format=None):
+        messages_1 = Message.objects.filter(to_user = user1, from_user = user2)
+        messages_2 = Message.objects.filter(to_user = user2, from_user = user1)
+        combined_messages = messages_1 | messages_2
+        combined_messages.order_by('-date')
+        serializer = MessageSerializer(combined_messages, many=True)
+        return Response(serializer.data)

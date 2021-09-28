@@ -10,4 +10,5 @@ urlpatterns = [
     path('friend-requests', views.FriendRequestList.as_view(), name='friend-request-list'),
     path('friend-request/<int:id>', views.FriendRequestDetail.as_view(), name='friend-request-detail'),
     path('messages', views.MessageList.as_view(), name='message-list'),
+    path('messages/<int:user1>/<int:user2>', views.GetChatHistory.as_view(), name='chat-history'),
 ]
