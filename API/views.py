@@ -30,11 +30,15 @@ class GetFriendRequests(APIView):
     UserModel = get_user_model()
     def get(self, request, username, format=None):
         request_to = self.UserModel.objects.get(username=username)
-        friend_requests = FriendRequest.objects.filter(to_user = request_to)
-        serializer = FriendRequestSerializer(friend_requests, many=True)
+        friend_requests_1 = FriendRequest.objects.filter(to_user = request_to)
+        friend_requests_2 = FriendRequest.objects.filter(from_user = request_to)
+        combined_requests = friend_requests_1 | friend_requests_2
+        serializer = FriendRequestSerializer(combined_requests, many=True)
         for item in serializer.data:
             from_user = self.UserModel.objects.get(id=item['from_user'])
-            item['request_name'] = f'{from_user.first_name} {from_user.last_name}'
+            to_user = self.UserModel.objects.get(id=item['to_user'])
+            item['from_user_name'] = f'{from_user.first_name} {from_user.last_name}'
+            item['to_user_name'] = f'{to_user.first_name} {to_user.last_name}'
         return Response(serializer.data)
 
 class GetFriends(APIView):
