@@ -1,0 +1,7 @@
+Django
+psycopg2-binary
+djangorestframework
+dj_database_url
+gunicorn
+django-cors-headers
+django-heroku
