@@ -10,12 +10,12 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ('username', 'email', 'password', 'password_confirmation', 'first_name', 'last_name')
+        fields = ('username', 'email', 'password', 'password_confirmation', 'first_name', 'last_name', 'game_name')
         write_only_fields = ('password', 'password_confirmation')
 
     def create(self, validated_data):
         user = self.UserModel.objects.create(
-            username=validated_data['username'], email=validated_data['email'], first_name=validated_data['first_name'], last_name=validated_data['last_name']
+            username=validated_data['username'], email=validated_data['email'], first_name=validated_data['first_name'], last_name=validated_data['last_name'], game_name=validated_data['game_name']
         )
         password=validated_data['password']
         password_confirmation=validated_data['password_confirmation']
