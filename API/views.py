@@ -15,6 +15,7 @@ class UserList(APIView):
     # permission_classes = [IsAuthenticated,]
     UserModel = get_user_model()
     def get(self, request, format=None):
+        print(request.user)
         users = self.UserModel.objects.all()
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
